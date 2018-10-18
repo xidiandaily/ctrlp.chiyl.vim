@@ -36,6 +36,19 @@ function! ctrlp#mycmd#GitBlame()
     silent execute ':! git blame '.filename.' > '.blamefilename
     silent execute ':cd '.olddir
     silent execute ':edit '.blamefilename
+  else
+    let a:file=expand("%:p")
+python << EOF
+import subprocess
+import vim
+a_filename = vim.eval("a:file")
+p = subprocess.Popen(["TortoiseGitBlame.exe",a_filename],shell=False,stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+out,err=p.communicate()
+p.stdin.close()
+if err:
+    print("Falied!",err)
+    sys.exit()
+EOF
   endif
 endfunction
 
@@ -49,6 +62,19 @@ function! ctrlp#mycmd#SvnBlame()
     silent execute ':! svn blame '.filename.' > '.blamefilename
     silent execute ':cd '.olddir
     silent execute ':edit '.blamefilename
+  else
+    let a:file=expand("%:p")
+python << EOF
+import subprocess
+import vim
+a_filename = "/path:"+vim.eval("a:file")
+p = subprocess.Popen(["TortoiseProc.exe","/command:blame",a_filename],shell=False,stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+out,err=p.communicate()
+p.stdin.close()
+if err:
+    print("Falied!",err)
+    sys.exit()
+EOF
   endif
 endfunction
 
