@@ -26,8 +26,30 @@ function! ctrlp#mycmd#NerdTreeCurFile()
   silent execute ':set rnu'
 endfunction
 
+function! ctrlp#mycmd#GitBlame()
+  echom "hello world"
+  if g:iswindows == 0
+    echom "hello mac"
+    let olddir=getcwd()
+    let filedir=expand("%:p:h")
+    let filename=expand("%:p:t")
+    let blamefilename="/tmp/".expand("%:p:t").'.blame'
+    silent execute ':cd '.filedir
+    silent execute ':! git blame '.filename.' > '.blamefilename
+    silent execute ':cd '.olddir
+    silent execute ':edit '.blamefilename
+  endif
+endfunction
+
+function! ctrlp#mycmd#SvnBlame()
+  if g:iswindows == 0
+  endif
+endfunction
+
 let s:mycmd_cmds =[
-      \ {'name':'cft','cmd':'call ctrlp#mycmd#NerdTreeCurFile()','desc':'open NERDTree On Cur file folder'}
+      \ {'name':'cft','cmd':'call ctrlp#mycmd#NerdTreeCurFile()','desc':'open NERDTree On Cur file folder'},
+      \ {'name':'gitblame','cmd':'call ctrlp#mycmd#GitBlame()','desc':'git brame Cur file'},
+      \ {'name':'svnblame','cmd':'call ctrlp#mycmd#SvnBlame()','desc':'svn brame Cur file'}
       \]
 
 " Add this extension's settings to g:ctrlp_ext_vars
