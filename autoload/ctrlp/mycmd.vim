@@ -57,11 +57,39 @@ function! ctrlp#mycmd#SvnBlame()
     let olddir=getcwd()
     let filedir=expand("%:p:h")
     let filename=expand("%:p:t")
-    let blamefilename="/tmp/".expand("%:p:t").'.blame'
+    let a:blamefilename="/tmp/".expand("%:p:t").'.blame'
+    let a:blamefilename_v="/tmp/".expand("%:p:t").'.blame.v'
     silent execute ':cd '.filedir
-    silent execute ':! svn blame '.filename.' > '.blamefilename
+    silent execute ':! svn blame '.filename.' > '.a:blamefilename
+    silent execute ':! svn blame -v '.filename.' > '.a:blamefilename_v
+python <<EOF
+import fileinput
+import codecs
+import shutil
+import os
+import vim
+
+infile = vim.eval("a:blamefilename")
+infile_v = vim.eval("a:blamefilename_v")
+infile_tmp=infile+".tmp"
+
+gLine=[]
+for line in fileinput.FileInput(infile_v):
+    header=line[:43]
+    gLine.append(header)
+
+with codecs.open(infile_tmp,"wc","utf-8") as fileObj:
+    for line in fileinput.FileInput(infile):
+        content=line[18:].decode("cp936")
+        header=gLine.pop()
+        strNewLine=header+" "+content
+        fileObj.write(strNewLine)
+    fileObj.close()
+os.unlink(infile_v)
+shutil.move(infile_tmp,infile)
+EOF
     silent execute ':cd '.olddir
-    silent execute ':edit '.blamefilename
+    silent execute ':edit '.a:blamefilename
   else
     let a:file=expand("%:p")
 python << EOF
