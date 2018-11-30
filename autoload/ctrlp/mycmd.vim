@@ -78,6 +78,7 @@ for line in fileinput.FileInput(infile_v):
     header=line[:43]
     gLine.append(header)
 
+gLine.reverse()
 with codecs.open(infile_tmp,"wc","utf-8") as fileObj:
     for line in fileinput.FileInput(infile):
         content=line[18:].decode("cp936")
