@@ -37,11 +37,11 @@ function! ctrlp#mycmd#GitBlame()
     silent execute ':cd '.olddir
     silent execute ':edit '.blamefilename
   else
-    let a:file=expand("%:p")
+    let l:file=expand("%:p")
 python << EOF
 import subprocess
 import vim
-a_filename = vim.eval("a:file")
+a_filename = vim.eval("l:file")
 p = subprocess.Popen(["TortoiseGitBlame.exe",a_filename],shell=False,stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 out,err=p.communicate()
 p.stdin.close()
@@ -57,11 +57,11 @@ function! ctrlp#mycmd#SvnBlame()
     let olddir=getcwd()
     let filedir=expand("%:p:h")
     let filename=expand("%:p:t")
-    let a:blamefilename="/tmp/".expand("%:p:t").'.blame'
-    let a:blamefilename_v="/tmp/".expand("%:p:t").'.blame.v'
+    let l:blamefilename="/tmp/".expand("%:p:t").'.blame'
+    let l:blamefilename_v="/tmp/".expand("%:p:t").'.blame.v'
     silent execute ':cd '.filedir
-    silent execute ':! svn blame '.filename.' > '.a:blamefilename
-    silent execute ':! svn blame -v '.filename.' > '.a:blamefilename_v
+    silent execute ':! svn blame -x -b -x --ignore-eol-style '.filename.' > '.l:blamefilename
+    silent execute ':! svn blame -x -b -x --ignore-eol-style -v '.filename.' > '.l:blamefilename_v
 python <<EOF
 import fileinput
 import codecs
@@ -69,8 +69,8 @@ import shutil
 import os
 import vim
 
-infile = vim.eval("a:blamefilename")
-infile_v = vim.eval("a:blamefilename_v")
+infile = vim.eval("l:blamefilename")
+infile_v = vim.eval("l:blamefilename_v")
 infile_tmp=infile+".tmp"
 
 gLine=[]
@@ -90,13 +90,13 @@ os.unlink(infile_v)
 shutil.move(infile_tmp,infile)
 EOF
     silent execute ':cd '.olddir
-    silent execute ':edit '.a:blamefilename
+    silent execute ':edit '.l:blamefilename
   else
-    let a:file=expand("%:p")
+    let l:file=expand("%:p")
 python << EOF
 import subprocess
 import vim
-a_filename = "/path:"+vim.eval("a:file")
+a_filename = "/path:"+vim.eval("l:file")
 p = subprocess.Popen(["TortoiseProc.exe","/command:blame",a_filename],shell=False,stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 out,err=p.communicate()
 p.stdin.close()
