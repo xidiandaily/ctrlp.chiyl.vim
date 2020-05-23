@@ -107,10 +107,15 @@ EOF
   endif
 endfunction
 
+function! ctrlp#mycmd#TabSplit()
+    silent execute ':tab split'
+endfunction
+
 let s:mycmd_cmds =[
       \ {'name':'cft','cmd':'call ctrlp#mycmd#NerdTreeCurFile()','desc':'open NERDTree On Cur file folder'},
       \ {'name':'gitblame','cmd':'call ctrlp#mycmd#GitBlame()','desc':'git blame Cur file'},
-      \ {'name':'svnblame','cmd':'call ctrlp#mycmd#SvnBlame()','desc':'svn blame Cur file'}
+      \ {'name':'svnblame','cmd':'call ctrlp#mycmd#SvnBlame()','desc':'svn blame Cur file'},
+      \ {'name':'ts','cmd':'call ctrlp#mycmd#TabSplit()','desc':'tabsplit opens current buffer in new tab page'}
       \]
 
 " Add this extension's settings to g:ctrlp_ext_vars
