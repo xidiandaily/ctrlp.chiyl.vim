@@ -19,6 +19,16 @@ if ( exists('g:loaded_ctrlp_myp4') && g:loaded_ctrlp_myp4 )
 endif
 let g:loaded_ctrlp_myp4 = 1
 
+function! s:open_new_win(fileout)
+    if bufexists(a:fileout)
+      if len(win_findbuf(bufnr(a:fileout)))==0
+        silent execute ':25sv +1 '.a:fileout
+      endif
+    else
+      silent execute ':25sv +1 '.a:fileout
+    endif
+endfunction
+
 function! ctrlp#myp4#Loadctrlpmyp4()
   let g:loaded_ctrlp_myp4 = 0
   silent execute ':so C:\Vim\vimfiles\bundle\ctrlp.chiyl.vim\autoload\ctrlp\myp4.vim'
@@ -34,52 +44,86 @@ function! ctrlp#myp4#P4Revert()
     silent execute ':!p4 revert '.l:file
 endfunction
 
+function! ctrlp#myp4#P4RevertAll()
+    silent execute ':!p4 revert ...'
+endfunction
+
 function! ctrlp#myp4#P4Opened()
     let l:file=expand("%:p")
     let s:out='.myp4.out.opened'
     execute ':!p4 opened >'.s:out
-    silent execute ':25sv +1 '.s:out
+    call s:open_new_win(s:out)
 endfunction
 
 function! ctrlp#myp4#P4Annotate()
     let l:file=expand("%:p")
     let s:out='.myp4.out.annotate'
     execute ':!p4 annotate -c -u '.l:file.' >'.s:out
-    silent execute ':25sv +1 '.s:out
+    call s:open_new_win(s:out)
 endfunction
 
 function! ctrlp#myp4#P4Change()
     let l:file=expand("%:p")
-    let s:wordUnderCursor = expand("<cword>")
+    let s:wordUnderCursor = str2nr(expand("<cword>"),10)
+    if s:wordUnderCursor > 0
+      let s:changenum=input('please input change num[default:'.s:wordUnderCursor.']:')
+      if str2nr(s:changenum,10) == 0
+        let s:changenum=s:wordUnderCursor
+      endif
+    else
+      let s:changenum=input('please input change num[default:new]:')
+    endif
     let s:out='.myp4.out.change'
-    execute ':!p4 change -o '.s:wordUnderCursor.' >'.s:out
-    execute ':!p4 describe '.s:wordUnderCursor.' >>'.s:out
-    silent execute ':25sv +1 '.s:out
+    execute ':!p4 change -o '.s:changenum.' >'.s:out
+    execute ':!p4 describe '.s:changenum.' >>'.s:out
+    call s:open_new_win(s:out)
 endfunction
 
 
 function! ctrlp#myp4#P4Sync()
     let s:out='.myp4.out.sync'
     execute ':!p4 sync --parallel=0 | tee '.s:out
-    silent execute ':25sv +1 '.s:out
+    call s:open_new_win(s:out)
 endfunction
 
 function! ctrlp#myp4#P4Filelog()
     let l:file=expand("%:p")
     let s:out='.myp4.out.filelog'
     execute ':!p4 filelog -l '.l:file.' > '.s:out
-    silent execute ':25sv +1 '.s:out
+    call s:open_new_win(s:out)
+endfunction
+
+function! ctrlp#myp4#P4Review()
+    let s:link=input('please input review link:')
+    let s:output={'changenum':0}
+py3 << EOF
+import re
+import vim
+
+link=vim.eval('s:link')
+output=vim.bindeval('s:output')
+result=re.search('(\d+)',link)
+if result:
+  output['changenum']=int(result.group(1))
+EOF
+    if s:output['changenum'] > 0
+      let s:out='.myp4.out.review'
+      execute ':!p4 unshelve -s '.s:output['changenum'].' > '.s:out
+      call s:open_new_win(s:out)
+    endif
 endfunction
 
 let g:ctrlp_myp4_cmds=[]
 let s:myp4_cmds =[
       \ {'name':'p4edit','cmd':'call ctrlp#myp4#P4Edit()','desc':'p4 edit'},
+      \ {'name':'p4revertall','cmd':'call ctrlp#myp4#P4RevertAll()','desc':'p4 revert all'},
       \ {'name':'p4revert','cmd':'call ctrlp#myp4#P4Revert()','desc':'p4 revert'},
       \ {'name':'p4opened','cmd':'call ctrlp#myp4#P4Opened()','desc':'p4 opened '},
       \ {'name':'p4annotate','cmd':'call ctrlp#myp4#P4Annotate()','desc':'p4 files '},
       \ {'name':'p4change','cmd':'call ctrlp#myp4#P4Change()','desc':'p4 change -o'},
       \ {'name':'p4sync','cmd':'call ctrlp#myp4#P4Sync()','desc':'p4 sync --parallel=0'},
       \ {'name':'p4filelog','cmd':'call ctrlp#myp4#P4Filelog()','desc':'p4 filelog '},
+      \ {'name':'p4review','cmd':'call ctrlp#myp4#P4Review()','desc':'p4 review,unshelve'},
       \]
 
 " Add this extension's settings to g:ctrlp_ext_vars
