@@ -29,11 +29,6 @@ function! s:open_new_win(fileout)
     endif
 endfunction
 
-function! ctrlp#myp4#Loadctrlpmyp4()
-  let g:loaded_ctrlp_myp4 = 0
-  silent execute ':so C:\Vim\vimfiles\bundle\ctrlp.chiyl.vim\autoload\ctrlp\myp4.vim'
-endfunction
-
 function! ctrlp#myp4#P4Edit()
     let l:file=expand("%:p")
     silent execute ':!p4 edit '.l:file
