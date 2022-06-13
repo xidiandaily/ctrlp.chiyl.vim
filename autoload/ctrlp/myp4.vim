@@ -19,16 +19,6 @@ if ( exists('g:loaded_ctrlp_myp4') && g:loaded_ctrlp_myp4 )
 endif
 let g:loaded_ctrlp_myp4 = 1
 
-function! s:open_new_win(fileout)
-    if bufexists(a:fileout)
-      if len(win_findbuf(bufnr(a:fileout)))==0
-        silent execute ':25sv +1 '.a:fileout
-      endif
-    else
-      silent execute ':25sv +1 '.a:fileout
-    endif
-endfunction
-
 function! ctrlp#myp4#P4Edit()
     let l:file=expand("%:p")
     silent execute ':!p4 edit '.l:file
@@ -37,75 +27,92 @@ endfunction
 function! ctrlp#myp4#P4Revert()
     let l:file=expand("%:p")
     silent execute ':!p4 revert '.l:file
+    call ctrlp#myp4#P4Opened()
 endfunction
 
 function! ctrlp#myp4#P4RevertAll()
     silent execute ':!p4 revert ...'
+    call ctrlp#myp4#P4Opened()
 endfunction
 
 function! ctrlp#myp4#P4Opened()
-    let l:file=expand("%:p")
     let s:out='.myp4.out.opened'
-    execute ':!p4 opened >'.s:out
-    call s:open_new_win(s:out)
+    execute ':!p4  -Ztag -F "action:\%action\%,	type:\%type\%,	localfile: \%clientFile\% ,\#\%rev\%,	change:\%change\%" opened | sed "s/\/\/.*_proj\///" >'.s:out
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
 function! ctrlp#myp4#P4Annotate()
     let l:file=expand("%:p")
     let s:out='.myp4.out.annotate'
     execute ':!p4 annotate -c -u '.l:file.' >'.s:out
-    call s:open_new_win(s:out)
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
-function! ctrlp#myp4#P4Change()
+function! ctrlp#myp4#P4Describe()
     let l:file=expand("%:p")
     let s:wordUnderCursor = str2nr(expand("<cword>"),10)
     if s:wordUnderCursor > 0
-      let s:changenum=input('please input change num[default:'.s:wordUnderCursor.']:')
+      let s:changenum=ctrlp#mybase#strlp_link_to_changenum(input('please input change num[default:'.s:wordUnderCursor.']:'))
       if str2nr(s:changenum,10) == 0
         let s:changenum=s:wordUnderCursor
       endif
     else
-      let s:changenum=input('please input change num[default:new]:')
+      let s:changenum=ctrlp#mybase#strlp_link_to_changenum(input('please input change num[default:new]:'))
     endif
-    let s:out='.myp4.out.change'
-    execute ':!p4 change -o '.s:changenum.' >'.s:out
-    execute ':!p4 describe '.s:changenum.' >>'.s:out
-    call s:open_new_win(s:out)
-endfunction
+
+    let s:out='.myp4.out.describe'
+    if s:changenum == 0
+      execute ':!p4 change -o >'.s:out
+    else
+      let s:showdiff=input('show diff(Yy/Nn)(Default:N):')
+      if s:showdiff == 'Y' || s:showdiff =='y'
+        let s:contextlen=input('show diff context length(default:1):')
+        if str2nr(s:contextlen,10) == 0
+          let s:contextlen=1
+        else
+          let s:contextlen=s:contextlen
+        endif
+        execute ':!p4 describe -Sa -du'.s:contextlen.' -dl -db '.s:changenum.' >'.s:out
+        execute ':!echo /* vim: set filetype=diff : */ >>'.s:out
+      else
+        execute ':!p4 describe -s -Sa '.s:changenum.' >'.s:out
+      endif
+    endif
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
+  endfunction
 
 
 function! ctrlp#myp4#P4Sync()
     let s:out='.myp4.out.sync'
     execute ':!p4 sync --parallel=0 | tee '.s:out
-    call s:open_new_win(s:out)
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
 function! ctrlp#myp4#P4Filelog()
     let l:file=expand("%:p")
     let s:out='.myp4.out.filelog'
     execute ':!p4 filelog -l '.l:file.' > '.s:out
-    call s:open_new_win(s:out)
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
-function! ctrlp#myp4#P4Review()
-    let s:link=input('please input review link:')
-    let s:output={'changenum':0}
-py3 << EOF
-import re
-import vim
-
-link=vim.eval('s:link')
-output=vim.bindeval('s:output')
-result=re.search('(\d+)',link)
-if result:
-  output['changenum']=int(result.group(1))
-EOF
-    if s:output['changenum'] > 0
-      let s:out='.myp4.out.review'
-      execute ':!p4 unshelve -s '.s:output['changenum'].' > '.s:out
-      call s:open_new_win(s:out)
+function! ctrlp#myp4#P4Unshelve()
+    let changenum=ctrlp#mybase#strlp_link_to_changenum(input('please input changenum(link):'))
+    if changenum > 0
+      let s:out='.myp4.out.open'
+      execute ':!p4 unshelve -s '.changenum
+      call ctrlp#myp4#P4Opened()
     endif
+endfunction
+
+function! ctrlp#myp4#P4Changes()
+    let daycnt=ctrlp#mybase#strlp_link_to_changenum(input('How many days to display(default:1,current day):'))
+    if daycnt ==0
+      let daycnt=1
+    endif
+    let mytime=localtime()-(daycnt-1)*86400
+    let s:out='.myp4.out.changes'
+    execute ':!p4 changes -s submitted -t -l ...'.strftime("@%Y/%m/%d,@now",mytime).' >'.s:out
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
 let g:ctrlp_myp4_cmds=[]
@@ -115,10 +122,11 @@ let s:myp4_cmds =[
       \ {'name':'p4revert','cmd':'call ctrlp#myp4#P4Revert()','desc':'p4 revert'},
       \ {'name':'p4opened','cmd':'call ctrlp#myp4#P4Opened()','desc':'p4 opened '},
       \ {'name':'p4annotate','cmd':'call ctrlp#myp4#P4Annotate()','desc':'p4 files '},
-      \ {'name':'p4change','cmd':'call ctrlp#myp4#P4Change()','desc':'p4 change -o'},
+      \ {'name':'p4describe','cmd':'call ctrlp#myp4#P4Describe()','desc':'p4 change -o'},
       \ {'name':'p4sync','cmd':'call ctrlp#myp4#P4Sync()','desc':'p4 sync --parallel=0'},
       \ {'name':'p4filelog','cmd':'call ctrlp#myp4#P4Filelog()','desc':'p4 filelog '},
-      \ {'name':'p4review','cmd':'call ctrlp#myp4#P4Review()','desc':'p4 review,unshelve'},
+      \ {'name':'p4unshelve','cmd':'call ctrlp#myp4#P4Unshelve()','desc':'p4 review,unshelve'},
+      \ {'name':'p4changes','cmd':'call ctrlp#myp4#P4Changes()','desc':'p4 changes,show history of submitted'},
       \]
 
 " Add this extension's settings to g:ctrlp_ext_vars
