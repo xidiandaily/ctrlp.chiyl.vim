@@ -48,6 +48,18 @@ function! ctrlp#myp4#P4Annotate()
     call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
+function! ctrlp#myp4#P4Diff()
+    let l:file=expand("%:p")
+    let s:use_beyon_compare=input('show diff with BeyondCompare(Yy/Nn)(Default:N):')
+    if s:use_beyon_compare == 'Y' || s:use_beyon_compare == 'y'
+      silent execute ':!p4 set P4DIFF="C:\Program Files\Beyond Compare 4\BCompare.exe" && p4 diff '.l:file
+    else
+      let s:out='.myp4.out.diff'
+      silent execute ':!p4 set P4DIFF="" && p4 diff '.l:file.' > '.s:out
+      call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
+    endif
+endfunction
+
 function! ctrlp#myp4#P4Describe()
     let l:file=expand("%:p")
     let s:wordUnderCursor = str2nr(expand("<cword>"),10)
@@ -105,7 +117,7 @@ function! ctrlp#myp4#P4Unshelve()
 endfunction
 
 function! ctrlp#myp4#P4Changes()
-    let daycnt=ctrlp#mybase#strlp_link_to_changenum(input('How many days to display(default:1,current day):'))
+    let daycnt=ctrlp#mybase#strlp_link_to_changenum(input('How many days to display(default:1,today):'))
     if daycnt ==0
       let daycnt=1
     endif
@@ -120,6 +132,7 @@ let s:myp4_cmds =[
       \ {'name':'p4edit','cmd':'call ctrlp#myp4#P4Edit()','desc':'p4 edit'},
       \ {'name':'p4revertall','cmd':'call ctrlp#myp4#P4RevertAll()','desc':'p4 revert all'},
       \ {'name':'p4revert','cmd':'call ctrlp#myp4#P4Revert()','desc':'p4 revert'},
+      \ {'name':'p4diff','cmd':'call ctrlp#myp4#P4Diff()','desc':'p4 diff, compares files in your workspace to revisions in the depot'},
       \ {'name':'p4opened','cmd':'call ctrlp#myp4#P4Opened()','desc':'p4 opened '},
       \ {'name':'p4annotate','cmd':'call ctrlp#myp4#P4Annotate()','desc':'p4 files '},
       \ {'name':'p4describe','cmd':'call ctrlp#myp4#P4Describe()','desc':'p4 change -o'},
