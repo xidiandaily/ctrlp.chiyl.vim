@@ -91,7 +91,7 @@ function! ctrlp#myp4#P4Describe()
       endif
     endif
     call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
-  endfunction
+endfunction
 
 
 function! ctrlp#myp4#P4Sync()
@@ -127,6 +127,23 @@ function! ctrlp#myp4#P4Changes()
     call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
+function! ctrlp#myp4#P4ReviewLink()
+    let s:wordUnderCursor = str2nr(expand("<cword>"),10)
+    if s:wordUnderCursor > 0
+      let s:changenum=ctrlp#mybase#strlp_link_to_changenum(input('please input change num[default: https://cr.lgame.qq.com/changes/'.s:wordUnderCursor.']:'))
+      if str2nr(s:changenum,10) == 0
+        let s:changenum=s:wordUnderCursor
+      endif
+    else
+      let s:changenum=ctrlp#mybase#strlp_link_to_changenum(input('please input change num: https://cr.lgame.qq.com/changes/'))
+    endif
+
+    if s:changenum != 0
+      call openbrowser#open('https://cr.lgame.qq.com/changes/'.s:changenum)
+      "silent ':OpenBrowser https://cr.lgame.qq.com/changes/'.s:changenum
+    endif
+  endfunction
+
 let g:ctrlp_myp4_cmds=[]
 let s:myp4_cmds =[
       \ {'name':'p4edit','cmd':'call ctrlp#myp4#P4Edit()','desc':'p4 edit'},
@@ -140,6 +157,7 @@ let s:myp4_cmds =[
       \ {'name':'p4filelog','cmd':'call ctrlp#myp4#P4Filelog()','desc':'p4 filelog '},
       \ {'name':'p4unshelve','cmd':'call ctrlp#myp4#P4Unshelve()','desc':'p4 review,unshelve'},
       \ {'name':'p4changes','cmd':'call ctrlp#myp4#P4Changes()','desc':'p4 changes,show history of submitted'},
+      \ {'name':'p4reviewlink','cmd':'call ctrlp#myp4#P4ReviewLink()','desc':'openbrowser with review link'},
       \]
 
 " Add this extension's settings to g:ctrlp_ext_vars
@@ -236,6 +254,8 @@ function! ctrlp#myp4#id()
 	return s:id
 endfunction
 
+" Key-mapping
+nnoremap <silent> <Plug>(ctrlp#myp4#P4ReviewLink) :<C-u>call ctrlp#myp4#P4ReviewLink()<CR>
 
 " Create a command to directly call the new search type
 "
