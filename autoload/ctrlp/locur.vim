@@ -51,7 +51,7 @@ echom "Loading..."
 call add(g:ctrlp_ext_vars, {
 	\ 'init':      'ctrlp#locur#init()',
 	\ 'accept':    'ctrlp#locur#accept',
-	\ 'lname':     'lgame sme tool, my lowner files,search owner by current buffer',
+	\ 'lname':     'cur file sme search',
 	\ 'sname':     'locur',
 	\ 'type':      'line',
 	\ 'enter':     'ctrlp#locur#enter()',

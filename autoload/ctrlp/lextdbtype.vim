@@ -1,8 +1,8 @@
 " To load this extension into ctrlp, add this to your vimrc:
 "
-"     let g:ctrlp_extensions = ['ldbtables']
+"     let g:ctrlp_extensions = ['lextdbtype']
 "
-" Where 'ldbtables' is the name of the file 'ldbtables.vim'
+" Where 'lextdbtype' is the name of the file 'lextdbtype.vim'
 "
 " For multiple extensions:
 "
@@ -13,11 +13,11 @@
 echom "Loading..."
 
 " Load guard
-if ( exists('g:loaded_ctrlp_ldbtables') && g:loaded_ctrlp_ldbtables )
+if ( exists('g:loaded_ctrlp_lextdbtype') && g:loaded_ctrlp_lextdbtype )
 	\ || v:version < 700 || &cp
 	finish
 endif
-let g:loaded_ctrlp_ldbtables = 1
+let g:loaded_ctrlp_lextdbtype = 1
 
 " Add this extension's settings to g:ctrlp_ext_vars
 "
@@ -49,14 +49,14 @@ let g:loaded_ctrlp_ldbtables = 1
 " + specinput: enable special inputs '..' and '@cd' (disabled by default)
 "
 call add(g:ctrlp_ext_vars, {
-	\ 'init':      'ctrlp#ldbtables#init()',
-	\ 'accept':    'ctrlp#ldbtables#accept',
-	\ 'lname':     'dbtable name search',
-	\ 'sname':     'ldbtables',
+	\ 'init':      'ctrlp#lextdbtype#init()',
+	\ 'accept':    'ctrlp#lextdbtype#accept',
+	\ 'lname':     'csmsg cmd search',
+	\ 'sname':     'lextdbtype',
 	\ 'type':      'line',
-	\ 'enter':     'ctrlp#ldbtables#enter()',
-	\ 'exit':      'ctrlp#ldbtables#exit()',
-	\ 'opts':      'ctrlp#ldbtables#opts()',
+	\ 'enter':     'ctrlp#lextdbtype#enter()',
+	\ 'exit':      'ctrlp#lextdbtype#exit()',
+	\ 'opts':      'ctrlp#lextdbtype#opts()',
 	\ 'sort':      0,
 	\ 'specinput': 0,
 	\ })
@@ -66,8 +66,8 @@ call add(g:ctrlp_ext_vars, {
 "
 " Return: a Vim's List
 "
-function! ctrlp#ldbtables#init()
-  let s:filename=getcwd().'/protocol/star_def.xml'
+function! ctrlp#lextdbtype#init()
+  let s:filename=getcwd().'/protocol\star_def.xml'
   let s:key2line={}
   if filereadable(s:filename) == 1
     let s:filelist=readfile(s:filename)
@@ -75,7 +75,7 @@ function! ctrlp#ldbtables#init()
     let line_no=0
     for line in s:filelist
       let line_no+=1
-      let retstr=matchstr(line,"<macro .*DB_TABLE_ID.*/>")
+      let retstr=matchstr(line,"<macro.*EXT_DATA_TYPE_.*/>")
       if retstr!=''
         call add(keylists,retstr)
         let s:key2line[retstr]=line_no
@@ -93,7 +93,7 @@ endfunction
 "           the values are 'e', 'v', 't' and 'h', respectively
 "  a:str    the selected string
 "
-function! ctrlp#ldbtables#accept(mode, str)
+function! ctrlp#lextdbtype#accept(mode, str)
 	" For this example, just exit ctrlp and run help
 	call ctrlp#exit()
   let line_no=s:key2line[a:str]
@@ -101,17 +101,17 @@ function! ctrlp#ldbtables#accept(mode, str)
 endfunction
 
 " (optional) Do something before enterting ctrlp
-function! ctrlp#ldbtables#enter()
+function! ctrlp#lextdbtype#enter()
 endfunction
 
 
 " (optional) Do something after exiting ctrlp
-function! ctrlp#ldbtables#exit()
+function! ctrlp#lextdbtype#exit()
 endfunction
 
 
 " (optional) Set or check for user options specific to this extension
-function! ctrlp#ldbtables#opts()
+function! ctrlp#lextdbtype#opts()
 endfunction
 
 
@@ -119,15 +119,15 @@ endfunction
 let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
 
 " Allow it to be called later
-function! ctrlp#ldbtables#id()
+function! ctrlp#lextdbtype#id()
 	return s:id
 endfunction
 
 
 " Create a command to directly call the new search type
 "
-" Put this in vimrc or plugin/ldbtables.vim
-" command! CtrlPSample call ctrlp#init(ctrlp#ldbtables#id())
+" Put this in vimrc or plugin/lextdbtype.vim
+" command! CtrlPSample call ctrlp#init(ctrlp#lextdbtype#id())
 
 
 " vim:nofen:fdl=0:ts=2:sw=2:sts=2

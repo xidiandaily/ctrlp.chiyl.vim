@@ -51,7 +51,7 @@ let g:loaded_ctrlp_lidip = 1
 call add(g:ctrlp_ext_vars, {
 	\ 'init':      'ctrlp#lidip#init()',
 	\ 'accept':    'ctrlp#lidip#accept',
-	\ 'lname':     'lgame sme tool, my lowner files,search owner by current buffer',
+	\ 'lname':     'idip cmd search',
 	\ 'sname':     'lidip',
 	\ 'type':      'line',
 	\ 'enter':     'ctrlp#lidip#enter()',

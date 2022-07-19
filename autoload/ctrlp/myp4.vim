@@ -103,7 +103,7 @@ endfunction
 function! ctrlp#myp4#P4Filelog()
     let l:file=expand("%:p")
     let s:out='.myp4.out.filelog'
-    execute ':!p4 filelog -l '.l:file.' > '.s:out
+    execute ':!p4 filelog -i -l '.l:file.' > '.s:out
     call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 

@@ -51,7 +51,7 @@ let g:loaded_ctrlp_leventlog = 1
 call add(g:ctrlp_ext_vars, {
 	\ 'init':      'ctrlp#leventlog#init()',
 	\ 'accept':    'ctrlp#leventlog#accept',
-	\ 'lname':     'lgame sme tool, my lowner files,search owner by current buffer',
+	\ 'lname':     'eventlog type search',
 	\ 'sname':     'leventlog',
 	\ 'type':      'line',
 	\ 'enter':     'ctrlp#leventlog#enter()',

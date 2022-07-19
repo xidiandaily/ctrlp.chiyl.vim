@@ -51,7 +51,7 @@ echom "Loading..."
 call add(g:ctrlp_ext_vars, {
 	\ 'init':      'ctrlp#lasync#init()',
 	\ 'accept':    'ctrlp#lasync#accept',
-	\ 'lname':     'lgame sme tool, my lowner files,search owner by current buffer',
+	\ 'lname':     'asyncid search',
 	\ 'sname':     'lasync',
 	\ 'type':      'line',
 	\ 'enter':     'ctrlp#lasync#enter()',

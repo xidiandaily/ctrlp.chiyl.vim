@@ -51,7 +51,7 @@ let g:loaded_ctrlp_lcomm = 1
 call add(g:ctrlp_ext_vars, {
 	\ 'init':      'ctrlp#lcomm#init()',
 	\ 'accept':    'ctrlp#lcomm#accept',
-	\ 'lname':     'lgame sme tool, my lowner files,search owner by current buffer',
+	\ 'lname':     'commdb type search',
 	\ 'sname':     'lcomm',
 	\ 'type':      'line',
 	\ 'enter':     'ctrlp#lcomm#enter()',

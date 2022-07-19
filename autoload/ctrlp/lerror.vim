@@ -51,7 +51,7 @@ let g:loaded_ctrlp_lerror = 1
 call add(g:ctrlp_ext_vars, {
 	\ 'init':      'ctrlp#lerror#init()',
 	\ 'accept':    'ctrlp#lerror#accept',
-	\ 'lname':     'lgame sme tool, my lowner files,search owner by current buffer',
+	\ 'lname':     'error number search',
 	\ 'sname':     'lerror',
 	\ 'type':      'line',
 	\ 'enter':     'ctrlp#lerror#enter()',

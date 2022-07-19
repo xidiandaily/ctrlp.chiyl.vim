@@ -51,7 +51,7 @@ let g:loaded_ctrlp_lsvrid = 1
 call add(g:ctrlp_ext_vars, {
 	\ 'init':      'ctrlp#lsvrid#init()',
 	\ 'accept':    'ctrlp#lsvrid#accept',
-	\ 'lname':     'lgame sme tool, my lowner files,search owner by current buffer',
+	\ 'lname':     'serverid search',
 	\ 'sname':     'lsvrid',
 	\ 'type':      'line',
 	\ 'enter':     'ctrlp#lsvrid#enter()',

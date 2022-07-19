@@ -51,7 +51,7 @@ let g:loaded_ctrlp_lsscmd = 1
 call add(g:ctrlp_ext_vars, {
 	\ 'init':      'ctrlp#lsscmd#init()',
 	\ 'accept':    'ctrlp#lsscmd#accept',
-	\ 'lname':     'lgame sme tool, my lowner files,search owner by current buffer',
+	\ 'lname':     'sscmd search',
 	\ 'sname':     'lsscmd',
 	\ 'type':      'line',
 	\ 'enter':     'ctrlp#lsscmd#enter()',
