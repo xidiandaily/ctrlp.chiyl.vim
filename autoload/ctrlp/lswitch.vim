@@ -1,8 +1,8 @@
 " To load this extension into ctrlp, add this to your vimrc:
 "
-"     let g:ctrlp_extensions = ['lresource']
+"     let g:ctrlp_extensions = ['lswitch']
 "
-" Where 'lresource' is the name of the file 'lresource.vim'
+" Where 'lswitch' is the name of the file 'lswitch.vim'
 "
 " For multiple extensions:
 "
@@ -13,11 +13,11 @@
 echom "Loading..."
 
 " Load guard
-if ( exists('g:loaded_ctrlp_lresource') && g:loaded_ctrlp_lresource )
+if ( exists('g:loaded_ctrlp_lswitch') && g:loaded_ctrlp_lswitch )
 	\ || v:version < 700 || &cp
 	finish
 endif
-let g:loaded_ctrlp_lresource = 1
+let g:loaded_ctrlp_lswitch = 1
 
 " Add this extension's settings to g:ctrlp_ext_vars
 "
@@ -49,14 +49,14 @@ let g:loaded_ctrlp_lresource = 1
 " + specinput: enable special inputs '..' and '@cd' (disabled by default)
 "
 call add(g:ctrlp_ext_vars, {
-	\ 'init':      'ctrlp#lresource#init()',
-	\ 'accept':    'ctrlp#lresource#accept',
-	\ 'lname':     'lgame resource search',
-	\ 'sname':     'lresource',
+	\ 'init':      'ctrlp#lswitch#init()',
+	\ 'accept':    'ctrlp#lswitch#accept',
+	\ 'lname':     'csmsg cmd search',
+	\ 'sname':     'lswitch',
 	\ 'type':      'line',
-	\ 'enter':     'ctrlp#lresource#enter()',
-	\ 'exit':      'ctrlp#lresource#exit()',
-	\ 'opts':      'ctrlp#lresource#opts()',
+	\ 'enter':     'ctrlp#lswitch#enter()',
+	\ 'exit':      'ctrlp#lswitch#exit()',
+	\ 'opts':      'ctrlp#lswitch#opts()',
 	\ 'sort':      0,
 	\ 'specinput': 0,
 	\ })
@@ -66,25 +66,24 @@ call add(g:ctrlp_ext_vars, {
 "
 " Return: a Vim's List
 "
-function! ctrlp#lresource#init()
-  let s:filename='D:\\GitBase\\myLGameTools\\lgame_resource\\lgame_resource.txt'
-  let s:lresobjlist=[]
-
-  let s:line_no=0
-  for line in readfile(s:filename)
-    let s:line_no+=1
-    let lresobj={
-          \ "content":line,
-          \ "filename":s:filename,
-          \ "line_no":s:line_no}
-    call add(s:lresobjlist,lresobj)
-  endfor
-
-  let s:contentlist=[]
-  for lresobj in s:lresobjlist
-    call add(s:contentlist,lresobj['content'])
-  endfor
-  return s:contentlist
+function! ctrlp#lswitch#init()
+  let s:filename=getcwd().'/protocol\keywords.xml'
+  let s:key2line={}
+  if filereadable(s:filename) == 1
+    let s:filelist=readfile(s:filename)
+    let keylists=[]
+    let line_no=0
+    for line in s:filelist
+      let line_no+=1
+      let retstr=matchstr(line,"<macro.*SYSTEM_SWITCH_.*/>")
+      if retstr!=''
+        call add(keylists,retstr)
+        let s:key2line[retstr]=line_no
+      endif
+    endfor
+    return keylists
+  endif
+  return []
 endfunction
 
 " The action to perform on the selected string
@@ -94,29 +93,25 @@ endfunction
 "           the values are 'e', 'v', 't' and 'h', respectively
 "  a:str    the selected string
 "
-function! ctrlp#lresource#accept(mode, str)
+function! ctrlp#lswitch#accept(mode, str)
 	" For this example, just exit ctrlp and run help
 	call ctrlp#exit()
-
-  for lresobj in s:lresobjlist
-    if a:str==lresobj['content']
-      silent execute ':25sv +'.lresobj['line_no'].' '.lresobj['filename']
-    endif
-  endfor
+  let line_no=s:key2line[a:str]
+  silent execute ':25sv +'.line_no.' protocol/keywords.xml'
 endfunction
 
 " (optional) Do something before enterting ctrlp
-function! ctrlp#lresource#enter()
+function! ctrlp#lswitch#enter()
 endfunction
 
 
 " (optional) Do something after exiting ctrlp
-function! ctrlp#lresource#exit()
+function! ctrlp#lswitch#exit()
 endfunction
 
 
 " (optional) Set or check for user options specific to this extension
-function! ctrlp#lresource#opts()
+function! ctrlp#lswitch#opts()
 endfunction
 
 
@@ -124,15 +119,15 @@ endfunction
 let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
 
 " Allow it to be called later
-function! ctrlp#lresource#id()
+function! ctrlp#lswitch#id()
 	return s:id
 endfunction
 
 
 " Create a command to directly call the new search type
 "
-" Put this in vimrc or plugin/lresource.vim
-" command! CtrlPSample call ctrlp#init(ctrlp#lresource#id())
+" Put this in vimrc or plugin/lswitch.vim
+" command! CtrlPSample call ctrlp#init(ctrlp#lswitch#id())
 
 
 " vim:nofen:fdl=0:ts=2:sw=2:sts=2

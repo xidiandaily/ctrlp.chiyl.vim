@@ -48,6 +48,22 @@ function! ctrlp#myp4#P4Annotate()
     call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
+function! ctrlp#myp4#P4AnnotateA()
+    let l:file=expand("%:p")
+    let s:out='.myp4.out.annotate'
+    let s:show_full_annotate=input('show full annotate file ?(Yy/Nn)(Default:N):')
+    if s:show_full_annotate == 'Y' || s:show_full_annotate == 'y'
+      execute ':!p4 annotate -c -u -a '.l:file.' >'.s:out
+    else
+      let s:rev=ctrlp#mybase#strlp_link_to_changenum(input('please input rev num[default:1000]:'))
+      if str2nr(s:rev,10) == 0
+        let s:rev=1000
+      endif
+      execute ':!p4 annotate -c -u '.l:file.'\#'.s:rev.' >'.s:out
+    endif
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
+endfunction
+
 function! ctrlp#myp4#P4Diff()
     let l:file=expand("%:p")
     let s:use_beyon_compare=input('show diff with BeyondCompare(Yy/Nn)(Default:N):')
@@ -151,13 +167,14 @@ let s:myp4_cmds =[
       \ {'name':'p4revert','cmd':'call ctrlp#myp4#P4Revert()','desc':'p4 revert'},
       \ {'name':'p4diff','cmd':'call ctrlp#myp4#P4Diff()','desc':'p4 diff, compares files in your workspace to revisions in the depot'},
       \ {'name':'p4opened','cmd':'call ctrlp#myp4#P4Opened()','desc':'p4 opened '},
-      \ {'name':'p4annotate','cmd':'call ctrlp#myp4#P4Annotate()','desc':'p4 files '},
+      \ {'name':'p4annotate','cmd':'call ctrlp#myp4#P4Annotate()','desc':'p4 annotate -u -c '},
       \ {'name':'p4describe','cmd':'call ctrlp#myp4#P4Describe()','desc':'p4 change -o'},
       \ {'name':'p4sync','cmd':'call ctrlp#myp4#P4Sync()','desc':'p4 sync --parallel=0'},
       \ {'name':'p4filelog','cmd':'call ctrlp#myp4#P4Filelog()','desc':'p4 filelog '},
       \ {'name':'p4unshelve','cmd':'call ctrlp#myp4#P4Unshelve()','desc':'p4 review,unshelve'},
       \ {'name':'p4changes','cmd':'call ctrlp#myp4#P4Changes()','desc':'p4 changes,show history of submitted'},
       \ {'name':'p4reviewlink','cmd':'call ctrlp#myp4#P4ReviewLink()','desc':'openbrowser with review link'},
+      \ {'name':'p4annotate-a','cmd':'call ctrlp#myp4#P4AnnotateA()','desc':'p4 annotate -a'},
       \]
 
 " Add this extension's settings to g:ctrlp_ext_vars
