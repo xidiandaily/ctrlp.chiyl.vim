@@ -111,10 +111,21 @@ function! ctrlp#mycmd#TabSplit()
     silent execute ':tab split'
 endfunction
 
+fu! ctrlp#mycmd#Xml2Header()
+  if isdirectory('protocol')
+    let cur_pwd=chdir('protocol')
+    if filereadable('xml2header.bat') == 1
+      silent! execute '!xml2header.bat'
+      call chdir(cur_pwd)
+    endif
+  endif
+endfu
+
 let s:mycmd_cmds =[
       \ {'name':'cft','cmd':'call ctrlp#mycmd#NerdTreeCurFile()','desc':'open NERDTree On Cur file folder'},
       \ {'name':'gitblame','cmd':'call ctrlp#mycmd#GitBlame()','desc':'git blame Cur file'},
       \ {'name':'svnblame','cmd':'call ctrlp#mycmd#SvnBlame()','desc':'svn blame Cur file'},
+      \ {'name':'xml2head','cmd':'call ctrlp#mycmd#Xml2Header()','desc':'run lgame protocol/xml2header.bat'},
       \ {'name':'ts','cmd':'call ctrlp#mycmd#TabSplit()','desc':'tabsplit opens current buffer in new tab page'}
       \]
 

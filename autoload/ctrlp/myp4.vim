@@ -18,6 +18,13 @@ if ( exists('g:loaded_ctrlp_myp4') && g:loaded_ctrlp_myp4 )
 	finish
 endif
 let g:loaded_ctrlp_myp4 = 1
+let s:plugin_path=escape(expand("<sfile>:p:h"),'\')
+
+if has('python3')
+  execute 'py3file ' . s:plugin_path . '/p4change2singleline.py'
+else
+  execute 'pyfile ' . s:plugin_path . '/p4change2singleline.py'
+endif
 
 function! ctrlp#myp4#P4Edit()
     let l:file=expand("%:p")
@@ -140,6 +147,10 @@ function! ctrlp#myp4#P4Changes()
     let mytime=localtime()-(daycnt-1)*86400
     let s:out='.myp4.out.changes'
     execute ':!p4 changes -s submitted -t -l ...'.strftime("@%Y/%m/%d,@now",mytime).' >'.s:out
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
+
+    let s:out='.myp4.out.googlechanges'
+    execute 'python' . (has('python3') ? '3' : '') . ' P4Changes2GoogleDoc()'
     call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
