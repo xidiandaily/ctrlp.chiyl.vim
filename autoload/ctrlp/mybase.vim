@@ -58,4 +58,97 @@ function! ctrlp#mybase#mysplit(line,seq)
   return mylist
 endfunction
 
+fu! ctrlp#mybase#debug_print_dict(mydict)
+  if type(a:mydict) != type({})
+    echomsg "filetype is not dict,current type:".type(a:mydict)
+    return
+  endif
+
+  for [key,value] in items(a:mydict)
+    echomsg "{ ".key.":".value
+  endfor
+endfu
+
+fu! s:align_comment(line,maxlen)
+  let line=a:line
+  while len(line) < a:maxlen
+    let line=line.' '
+  endwhile
+  return line.':'
+endfu
+
+"自动生成函数注释
+fu! ctrlp#mybase#add_function_comment_by_tag()
+  let function_name=expand("<cword>")
+  let filename=fnamemodify(expand('%'),":p:.")
+  let ft=&ft
+  if ft!='c' && ft !='cpp'
+      echom 'not support ft:'.ft
+      return
+  endif
+
+  echomsg 'function_name:'. function_name . " filename:". filename . " ft:".ft
+  let mymatch=taglist(function_name)
+  for mt in mymatch
+    "echomsg 'filename:'. fnamemodify(mt['filename'],":p:.")
+    if fnamemodify(mt['filename'],":p:.") != filename
+      continue
+    endif
+    if ft=='c' || ft=='cpp'
+      "found function name
+      "call ctrlp#mybase#debug_print_dict(mt)
+      let parameters=split(mt['signature'][1:len(mt['signature'])-2],',')
+      let tmp_params=[]
+      for param in parameters
+        call add(tmp_params,'** @params '.split(param)[-1])
+      endfor
+
+      let maxlen=8
+      for param in tmp_params
+        if len(param) > maxlen
+          let maxlen=len(param)
+        endif
+      endfor
+
+      let comment_lines=['/******************************************************************************']
+      call add(comment_lines,s:align_comment("** @desc",maxlen))
+      call add(comment_lines,s:align_comment("**",maxlen))
+      for param in tmp_params
+        call add(comment_lines,s:align_comment(param,maxlen))
+      endfor
+      call add(comment_lines,s:align_comment("** @return",maxlen))
+      call add(comment_lines,s:align_comment("**",maxlen))
+      call add(comment_lines,"******************************************************************************/")
+      call append(line(".")-1,comment_lines)
+      return
+    endif
+  endfor
+  echom 'not found function name'
+endfu
+
+"删除文件
+fu! ctrlp#mybase#delete_file_if_exist(filename)
+  if filereadable(a:filename)
+    call delete(a:filename)
+    echomsg "delte file:".a:filename
+  endif
+endfu
+
+"对于 myp4.out.googlechanges 右键直接打开 Describe
+fu! ctrlp#mybase#open_p4_describe_from_googlechanges()
+  let s:myline=ctrlp#mybase#mysplit(getline(line(".")),'	')
+  if len(s:myline) > 1
+    let num=str2nr(s:myline[0],10)
+    if num == 0
+      echomsg "get line change num failed!"
+      return
+    endif
+
+    let s:out='.myp4.out.describe'
+    sil execute ':!p4 describe -Sa -du10 -dl -db '.num.' >'.s:out
+    sil execute ':!echo /* vim: set filetype=diff : */ >>'.s:out
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
+  endif
+endfu
+
 " vim:nofen:fdl=0:ts=2:sw=2:sts=2

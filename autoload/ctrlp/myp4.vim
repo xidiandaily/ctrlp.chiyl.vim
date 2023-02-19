@@ -51,7 +51,7 @@ endfunction
 function! ctrlp#myp4#P4Annotate()
     let l:file=expand("%:p")
     let s:out='.myp4.out.annotate'
-    execute ':!p4 annotate -c -u '.l:file.' >'.s:out
+    execute ':!p4 annotate -dw -c -u '.l:file.' >'.s:out
     call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
@@ -60,7 +60,7 @@ function! ctrlp#myp4#P4AnnotateA()
     let s:out='.myp4.out.annotate'
     let s:show_full_annotate=input('show full annotate file ?(Yy/Nn)(Default:N):')
     if s:show_full_annotate == 'Y' || s:show_full_annotate == 'y'
-      execute ':!p4 annotate -c -u -a '.l:file.' >'.s:out
+      execute ':!p4 annotate -dw -c -u -a '.l:file.' >'.s:out
     else
       let s:rev=ctrlp#mybase#strlp_link_to_changenum(input('please input rev num[default:1000]:'))
       if str2nr(s:rev,10) == 0

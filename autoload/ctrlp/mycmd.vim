@@ -1,3 +1,11 @@
+"==============================================================================
+" Description: global plugin for lawrencechi
+" Author:      lawrencechi <codeforfuture <at> 126.com>
+" Last Change: 2022.11.02
+" License:     This file is placed in the public domain.
+" Version:     1.0.0
+"==============================================================================
+
 " To load this extension into ctrlp, add this to your vimrc:
 "
 "     let g:ctrlp_extensions = ['mycmd']
@@ -18,6 +26,14 @@ if ( exists('g:loaded_ctrlp_mycmd') && g:loaded_ctrlp_mycmd )
 	finish
 endif
 let g:loaded_ctrlp_mycmd = 1
+
+let s:plugin_path=escape(expand('<sfile>:p:h'),'\')
+
+if has('python3')
+  execute 'py3file ' . s:plugin_path . '/lgametag2ctrlp.py'
+else
+  execute 'pyfile ' . s:plugin_path . '/lgametag2ctrlp.py'
+endif
 
 function! ctrlp#mycmd#NerdTreeCurFile()
   let filedir=expand("%:p:h")
@@ -121,12 +137,99 @@ fu! ctrlp#mycmd#Xml2Header()
   endif
 endfu
 
+fu! ctrlp#mycmd#DelProCfiles()
+  if isdirectory('protocol')
+    call ctrlp#mybase#delete_file_if_exist("protocol/keywords.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_aisvr.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_aisvr.pack.c")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_aisvr.pack.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_comm.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_comm.pack.c")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_comm.pack.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_cs.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_cs.pack.c")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_cs.pack.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_db.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_db.pack.c")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_db.pack.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_def.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_def.libpack.c")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_def.libpack.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_def.pack.c")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_def.pack.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_macro.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_macro.pack.c")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_macro.pack.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_res.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_shm2db.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_shm2db.pack.c")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_shm2db.pack.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_ss.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_ss.pack.c")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_ss.pack.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_stat_report.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_sync.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_sync.pack.c")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_sync.pack.h")
+    call ctrlp#mybase#delete_file_if_exist("protocol/star_userlog_define.h")
+  endif
+endfu
+
+
+fu! ctrlp#mycmd#LGameCtrlPTag()
+  let s:custom_tag_list=[]
+  if filereadable('./lgamesvrc.tags') == 1
+    silent! execute 'python' . (has('python3') ? '3' : '') . ' GenerateTag2CtrlpTag("./lgamesvrc.tags","./lgamesvrc.ctrlptags")'
+    call add(s:custom_tag_list,'./lgamesvrc.ctrlptags')
+  endif
+
+  if filereadable('./lgamexml.tags') == 1
+    silent! execute 'python' . (has('python3') ? '3' : '') . ' GenerateTag2CtrlpTag("./lgamexml.tags","./lgamexml.ctrlptags",[])'
+    call add(s:custom_tag_list,'./lgamexml.ctrlptags')
+  endif
+
+  if len(s:custom_tag_list)>1
+    let g:ctrlp_custom_tag_files=s:custom_tag_list
+    echom "set g:ctrlp_custom_tag_files: ". join(s:custom_tag_list)
+  else
+    echom "not found anny lgame tags file..."
+  endif
+endfu
+
+fu! ctrlp#mycmd#ChangesForOwner()
+  let filename=expand('%:p:t')
+  if filename != '.myp4.out.googlechanges'
+    echom "current file (".filename. ") is not .myp4.out.googlechanges, exit"
+    return
+  endif
+  let cur_owner=expand('<cword>')
+  if type(cur_owner)!=1
+    let cur_owner=''
+  endif
+  let owner_input=input('please input owner name [default:' .cur_owner.']:')
+  if len(owner_input)==0
+    let owner_input=cur_owner
+  endif
+  echom "current owner:".owner_input
+  let confirm_owenr=input('confirm owner:' .owner_input.'[Yy/Nn]:')
+  if confirm_owenr == 'Y' || confirm_owenr=='y'
+  else
+    return
+  endif
+  silent execute ':norm ggjma'
+  silent execute ':norm Gmb'
+  silent execute ":\'a,\'b v/\:\\d\\d\t".owner_input.'\t/del'
+endfu
+
 let s:mycmd_cmds =[
       \ {'name':'cft','cmd':'call ctrlp#mycmd#NerdTreeCurFile()','desc':'open NERDTree On Cur file folder'},
       \ {'name':'gitblame','cmd':'call ctrlp#mycmd#GitBlame()','desc':'git blame Cur file'},
       \ {'name':'svnblame','cmd':'call ctrlp#mycmd#SvnBlame()','desc':'svn blame Cur file'},
       \ {'name':'xml2head','cmd':'call ctrlp#mycmd#Xml2Header()','desc':'run lgame protocol/xml2header.bat'},
-      \ {'name':'ts','cmd':'call ctrlp#mycmd#TabSplit()','desc':'tabsplit opens current buffer in new tab page'}
+      \ {'name':'delprocfile','cmd':'call ctrlp#mycmd#DelProCfiles()','desc':'del protocol c source file(*.pack.c/.h)'},
+      \ {'name':'ts','cmd':'call ctrlp#mycmd#TabSplit()','desc':'tabsplit opens current buffer in new tab page'},
+      \ {'name':'ctag2lgame','cmd':'call ctrlp#mycmd#LGameCtrlPTag()','desc':'generate a tag for lgmae'},
+      \ {'name':'changes5owner','cmd':'call ctrlp#mycmd#ChangesForOwner()','desc':'googlechanges find spectial owner, to google'}
       \]
 
 " Add this extension's settings to g:ctrlp_ext_vars
