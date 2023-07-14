@@ -48,6 +48,13 @@ function! ctrlp#myp4#P4Opened()
     call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
+function! ctrlp#myp4#P4GenftgetCmd()
+    let s:out='.myp4.out.ftgetcmd'
+    execute ':!p4  -Ztag -F "ft get \%clientFile\% -s CodeBase_p4/\%clientFile\% -o" opened | sed "s/\/\/lawrencech_PC2\.//g" >'.s:out
+    "execute ':!p4  -Ztag -F "action:\%action\%,	type:\%type\%,	localfile: \%clientFile\% ,\#\%rev\%,	change:\%change\%" opened | sed "s/\/\/.*_proj\///" >'.s:out
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
+endfunction
+
 function! ctrlp#myp4#P4Annotate()
     let l:file=expand("%:p")
     let s:out='.myp4.out.annotate'
@@ -186,6 +193,7 @@ let s:myp4_cmds =[
       \ {'name':'p4changes','cmd':'call ctrlp#myp4#P4Changes()','desc':'p4 changes,show history of submitted'},
       \ {'name':'p4reviewlink','cmd':'call ctrlp#myp4#P4ReviewLink()','desc':'openbrowser with review link'},
       \ {'name':'p4annotate-a','cmd':'call ctrlp#myp4#P4AnnotateA()','desc':'p4 annotate -a'},
+      \ {'name':'p4ftget','cmd':'call ctrlp#myp4#P4GenftgetCmd()','desc':'generate cmd for ft get cmd'},
       \]
 
 " Add this extension's settings to g:ctrlp_ext_vars
