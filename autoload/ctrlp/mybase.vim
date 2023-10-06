@@ -19,6 +19,10 @@ function! ctrlp#mybase#ctrlp_open_new_win(fileout,is_writefile)
     endif
 endfunction
 
+function! ctrlp#mybase#close_win_base_on_filename(file_name)
+  :windo if expand('%') == a:file_name | close | endif
+endfunction
+
 function! ctrlp#mybase#strlp_link_to_changenum(link)
   let s:output={'changenum':0}
 py3 << EOF

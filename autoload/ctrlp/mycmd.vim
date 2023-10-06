@@ -132,6 +132,9 @@ fu! ctrlp#mycmd#Xml2Header()
     let cur_pwd=chdir('protocol')
     if filereadable('xml2header.bat') == 1
       silent! execute '!xml2header.bat'
+      if filereadable('star_define.h') == 0
+        call writefile(['#ifndef _STAR_DEFINE_H_', '#define _STAR_DEFINE_H_', '', '// 用来放协议的包含关系', '#include "protocol/star_macro.h"', '#include "protocol/star_comm.h"', '#include "protocol/star_def.h"', '#include "protocol/star_cs.h"', '#include "protocol/star_ss.h"', '#include "protocol/star_sync.h"', '#include "protocol/star_res.h"', '#include "protocol/keywords.h"', '#endif	// _STAR_DEFINE_H_',],'star_define.h','w')
+      endif
       call chdir(cur_pwd)
     endif
   endif

@@ -48,11 +48,8 @@ function! ctrlp#myp4#P4Opened()
     call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
 endfunction
 
-function! ctrlp#myp4#P4GenftgetCmd()
-    let s:out='.myp4.out.ftgetcmd'
-    execute ':!p4  -Ztag -F "ft get \%clientFile\% -s CodeBase_p4/\%clientFile\% -o" opened | sed "s/\/\/lawrencech_PC2\.//g" >'.s:out
-    "execute ':!p4  -Ztag -F "action:\%action\%,	type:\%type\%,	localfile: \%clientFile\% ,\#\%rev\%,	change:\%change\%" opened | sed "s/\/\/.*_proj\///" >'.s:out
-    call ctrlp#mybase#ctrlp_open_new_win(s:out,0)
+function! ctrlp#myp4#P4Protocol()
+    execute ':!p4  edit protocol/star_comm.xml protocol/star_cs.xml protocol/star_def.xml protocol/star_macro.xml protocol/star_ss.xml protocol/star_aisvr.xml protocol/star_sync.xml protocol/star_shm2db.xml'
 endfunction
 
 function! ctrlp#myp4#P4Annotate()
@@ -193,7 +190,7 @@ let s:myp4_cmds =[
       \ {'name':'p4changes','cmd':'call ctrlp#myp4#P4Changes()','desc':'p4 changes,show history of submitted'},
       \ {'name':'p4reviewlink','cmd':'call ctrlp#myp4#P4ReviewLink()','desc':'openbrowser with review link'},
       \ {'name':'p4annotate-a','cmd':'call ctrlp#myp4#P4AnnotateA()','desc':'p4 annotate -a'},
-      \ {'name':'p4ftget','cmd':'call ctrlp#myp4#P4GenftgetCmd()','desc':'generate cmd for ft get cmd'},
+      \ {'name':'p4protocol','cmd':'call ctrlp#myp4#P4Protocol()','desc':'edit all protocol files'},
       \]
 
 " Add this extension's settings to g:ctrlp_ext_vars
