@@ -49,7 +49,7 @@ function! ctrlp#myp4#P4Opened()
 endfunction
 
 function! ctrlp#myp4#P4Protocol()
-    execute ':!p4  edit protocol/star_comm.xml protocol/star_cs.xml protocol/star_def.xml protocol/star_macro.xml protocol/star_ss.xml protocol/star_aisvr.xml protocol/star_sync.xml protocol/star_shm2db.xml'
+    execute ':!p4  edit protocol/star_comm.xml protocol/star_cs.xml protocol/star_def.xml protocol/star_macro.xml protocol/star_ss.xml protocol/star_aisvr.xml protocol/star_sync.xml protocol/star_shm2db.xml protocol/star_scenes.xml'
 endfunction
 
 function! ctrlp#myp4#P4Annotate()
