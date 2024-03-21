@@ -44,7 +44,7 @@ endfunction
 
 function! ctrlp#mygit#pull()
     let s:out=tinytoolchiyl#base#gettmploopfilename#getname()
-    silent execute ':!git pull >'.s:out
+    silent execute ':!git pull 2>&1 >'.s:out
     call ctrlp#mybase#ctrlp_open_new_win(s:out,1)
     call ctrlp#mygit#do_log(1,10)
 endfunction
@@ -79,10 +79,26 @@ function! ctrlp#mygit#fileblame()
     call ctrlp#mybase#ctrlp_open_new_win(s:out,1)
 endfunction
 
+function! ctrlp#mygit#diff()
+    let s:out=tinytoolchiyl#base#gettmploopfilename#getname()
+    let s:prev_win=win_getid()
+    let s:content_length=tinytoolchiyl#base#myutil#get_user_input_num('get diff content length',10)
+    silent execute ':!echo git status -s -uno >'.s:out
+    silent execute ':!git status -s -uno >>'.s:out
+    silent execute ':!echo. >>'.s:out
+    silent execute ':!echo ================================================================================ >>'.s:out
+    silent execute ':!echo. >>'.s:out
+    silent execute ':!dos2unix '.s:out
+    silent execute ':!git diff -U'.s:content_length.' >>'.s:out
+    silent execute ':!echo |set /p="vim:tw=78:ts=8:noet:ft=git:norl:" >>'.s:out
+    call win_gotoid(s:prev_win)
+    call ctrlp#mybase#ctrlp_open_new_win(s:out,1)
+endfunction
+
 function! ctrlp#mygit#show_commit_detail()
     let s:commit = tinytoolchiyl#base#myutil#get_selected_text()
     if len(s:commit) == 0
-        let s:commit = tinytoolchiyl#base#myutil#get_user_input_text('input commit','null')
+        let s:commit = tinytoolchiyl#base#myutil#get_user_input_text('input commit',getreg('*'))
     endif
 
     let s:content_length=tinytoolchiyl#base#myutil#get_user_input_num('get patch content length',3)
@@ -109,6 +125,11 @@ function! ctrlp#mygit#guiblame()
     sil execute ':!cmd.exe /c start "" "C:\Program Files\TortoiseGit\bin\TortoiseGitProc.exe" /command:blame /path:'.l:file.' /closeonend:0'
 endfunction
 
+function! ctrlp#mygit#guipull()
+    let l:file=expand("%:p")
+    sil execute ':!cmd.exe /c start "" "C:\Program Files\TortoiseGit\bin\TortoiseGitProc.exe" /command:sync /path:./ /closeonend:0'
+endfunction
+
 function! ctrlp#mygit#vscode()
   let l:file=expand("%:p")
   sil execute ':!cmd.exe /c start "" "C:\Users\lawrencechi\AppData\Local\Programs\Microsoft VS Code\Code.exe" "./"'
@@ -121,10 +142,12 @@ let s:mygit_cmds =[
       \ {'name':'gitlog','cmd':'call ctrlp#mygit#log()','desc':'git log ./'},
       \ {'name':'gitfilelog','cmd':'call ctrlp#mygit#filelog()','desc':'git file log'},
       \ {'name':'gitblame','cmd':'call ctrlp#mygit#fileblame()','desc':'git blame filename'},
+      \ {'name':'gitdiff','cmd':'call ctrlp#mygit#diff()','desc':'git diff filename and file content'},
       \ {'name':'gitguicommit','cmd':'call ctrlp#mygit#guicommit()','desc':'git gui commit'},
       \ {'name':'gitguilog','cmd':'call ctrlp#mygit#guilog()','desc':'git gui log'},
       \ {'name':'gitguifilelog','cmd':'call ctrlp#mygit#guifilelog()','desc':'git gui file log'},
       \ {'name':'gitguiblame','cmd':'call ctrlp#mygit#guiblame()','desc':'git gui file blame'},
+      \ {'name':'gitguipull','cmd':'call ctrlp#mygit#guipull()','desc':'git gui pull sync project'},
       \ {'name':'gitvscode','cmd':'call ctrlp#mygit#vscode()','desc':'launch vscode'},
       \ {'name':'gitdesc','cmd':'call ctrlp#mygit#show_commit_detail()','desc':'git show $commit'},
       \]

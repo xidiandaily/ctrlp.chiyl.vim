@@ -42,31 +42,6 @@ function! ctrlp#mycmd#NerdTreeCurFile()
   silent execute ':set rnu'
 endfunction
 
-function! ctrlp#mycmd#GitBlame()
-  if g:iswindows == 0
-    let olddir=getcwd()
-    let filedir=expand("%:p:h")
-    let filename=expand("%:p:t")
-    let blamefilename="/tmp/".expand("%:p:t").'.blame'
-    silent execute ':cd '.filedir
-    silent execute ':! git blame '.filename.' > '.blamefilename
-    silent execute ':cd '.olddir
-    silent execute ':edit '.blamefilename
-  else
-    let l:file=expand("%:p")
-python << EOF
-import subprocess
-import vim
-a_filename = vim.eval("l:file")
-p = subprocess.Popen(["TortoiseGitBlame.exe",a_filename],shell=False,stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-out,err=p.communicate()
-p.stdin.close()
-if err:
-    print("Falied!",err)
-    sys.exit()
-EOF
-  endif
-endfunction
 
 function! ctrlp#mycmd#SvnBlame()
   if g:iswindows == 0
@@ -196,15 +171,22 @@ fu! ctrlp#mycmd#ChangesForOwner()
   silent execute ":\'a,\'b v/\:\\d\\d\t".owner_input.'\t/del'
 endfu
 
+function! ctrlp#mycmd#vscode()
+  let l:file=expand("%:p")
+  sil execute ':!cmd.exe /c start "" "C:\Users\lawrencechi\AppData\Local\Programs\Microsoft VS Code\Code.exe" "./" '.l:file.''
+endfunction
+
+
 let s:mycmd_cmds =[
-      \ {'name':'cft','cmd':'call ctrlp#mycmd#NerdTreeCurFile()','desc':'open NERDTree On Cur file folder'},
-      \ {'name':'gitblame','cmd':'call ctrlp#mycmd#GitBlame()','desc':'git blame Cur file'},
-      \ {'name':'svnblame','cmd':'call ctrlp#mycmd#SvnBlame()','desc':'svn blame Cur file'},
-      \ {'name':'xml2head','cmd':'call ctrlp#mycmd#Xml2Header()','desc':'run lgame protocol/xml2header.bat'},
-      \ {'name':'delprocfile','cmd':'call ctrlp#mycmd#DelProCfiles()','desc':'del protocol c source file(*.pack.c/.h)'},
-      \ {'name':'ts','cmd':'call ctrlp#mycmd#TabSplit()','desc':'tabsplit opens current buffer in new tab page'},
-      \ {'name':'ctag2lgame','cmd':'call ctrlp#mycmd#LGameCtrlPTag()','desc':'generate a tag for lgmae'},
-      \ {'name':'changes5owner','cmd':'call ctrlp#mycmd#ChangesForOwner()','desc':'googlechanges find spectial owner, to google'}
+      \ {'name':'1.vscode','cmd':'call ctrlp#mycmd#vscode()','desc':'open vscode On Cur folder '},
+      \ {'name':'2.cft','cmd':'call ctrlp#mycmd#NerdTreeCurFile()','desc':'open NERDTree On Cur file folder'},
+      \ {'name':'3.nt','cmd':'NERDTree','desc':'NERDTree'},
+      \ {'name':'4.svnblame','cmd':'call ctrlp#mycmd#SvnBlame()','desc':'svn blame Cur file'},
+      \ {'name':'5.xml2head','cmd':'call ctrlp#mycmd#Xml2Header()','desc':'run lgame protocol/xml2header.bat'},
+      \ {'name':'6.delprocfile','cmd':'call ctrlp#mycmd#DelProCfiles()','desc':'del protocol c source file(*.pack.c/.h)'},
+      \ {'name':'7.ts','cmd':'call ctrlp#mycmd#TabSplit()','desc':'tabsplit opens current buffer in new tab page'},
+      \ {'name':'8.ctag2lgame','cmd':'call ctrlp#mycmd#LGameCtrlPTag()','desc':'generate a tag for lgmae'},
+      \ {'name':'9.changes5owner','cmd':'call ctrlp#mycmd#ChangesForOwner()','desc':'googlechanges find spectial owner, to google'},
       \]
 
 " Add this extension's settings to g:ctrlp_ext_vars
