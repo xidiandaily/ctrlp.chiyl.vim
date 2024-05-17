@@ -12,6 +12,13 @@
 "         \ ]
 echom "Loading..."
 
+
+"只有特性文件夹才加载这个功能
+let s:filename=getcwd().'/protocol\star_cs.xml'
+if filereadable(s:filename) == 0
+	finish
+endif
+
 " Load guard
 if ( exists('g:loaded_ctrlp_lsvrid') && g:loaded_ctrlp_lsvrid )
 	\ || v:version < 700 || &cp

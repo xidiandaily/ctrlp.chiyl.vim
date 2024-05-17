@@ -66,7 +66,32 @@ call add(g:ctrlp_ext_vars, {
 "
 " Return: a Vim's List
 "
+
+function! ctrlp#lerror#init_for_pgame()
+  let s:filename=getcwd().'/bin/luascript/common/err_code.lua'
+  let s:key2line={}
+  if filereadable(s:filename) == 1
+    let s:filelist=readfile(s:filename)
+    let keylists=[]
+    let line_no=0
+    for line in s:filelist
+      let line_no+=1
+      let retstr=matchstr(line,"err_.*=.*")
+      if retstr!=''
+        call add(keylists,retstr)
+        let s:key2line[retstr]=line_no
+      endif
+    endfor
+    return keylists
+  endif
+  return []
+endfunction
+
 function! ctrlp#lerror#init()
+  let s:filename=getcwd().'/bin/luascript/common/err_code.lua'
+  if filereadable(s:filename) == 1
+    return ctrlp#lerror#init_for_pgame()
+  endif
   let s:filename=getcwd().'/protocol/star_macro.xml'
   let s:key2line={}
   if filereadable(s:filename) == 1
@@ -97,7 +122,13 @@ function! ctrlp#lerror#accept(mode, str)
 	" For this example, just exit ctrlp and run help
 	call ctrlp#exit()
   let line_no=s:key2line[a:str]
-  silent execute ':25sv +'.line_no.' protocol/star_macro.xml'
+
+  let s:filename=getcwd().'/bin/luascript/common/err_code.lua'
+  if filereadable(s:filename) == 1
+    silent execute ':25sv +'.line_no.' bin/luascript/common/err_code.lua'
+  else
+    silent execute ':25sv +'.line_no.' protocol/star_macro.xml'
+  endif
 endfunction
 
 " (optional) Do something before enterting ctrlp
