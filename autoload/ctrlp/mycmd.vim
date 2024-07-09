@@ -173,7 +173,7 @@ endfu
 
 function! ctrlp#mycmd#vscode()
   let l:file=expand("%:p")
-  sil execute ':!cmd.exe /c start "" "C:\Users\lawrencechi\AppData\Local\Programs\Microsoft VS Code\Code.exe" "./" '.l:file.''
+  sil execute ':!cmd.exe /c start "" "D:\Users\lawrencechi\AppData\Local\Programs\Microsoft VS Code\Code.exe" "./" '.l:file.''
 endfunction
 
 
