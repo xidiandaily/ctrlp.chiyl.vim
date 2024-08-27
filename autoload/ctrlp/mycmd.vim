@@ -146,6 +146,31 @@ fu! ctrlp#mycmd#LGameCtrlPTag()
   endif
 endfu
 
+fu! ctrlp#mycmd#PGameCtrlPTag()
+  let s:custom_tag_list=[]
+  if filereadable('./pgamesvrc.tags') == 1
+    silent! execute 'python' . (has('python3') ? '3' : '') . ' PGameGenerateTag2CtrlpTag("./pgamesvrc.tags","./pgamesvrc.ctrlptags")'
+    call add(s:custom_tag_list,'./pgamesvrc.ctrlptags')
+  endif
+
+  if filereadable('./pgamexml.tags') == 1
+    silent! execute 'python' . (has('python3') ? '3' : '') . ' PGameGenerateTag2CtrlpTag("./pgamexml.tags","./pgamexml.ctrlptags")'
+    call add(s:custom_tag_list,'./pgamexml.ctrlptags')
+  endif
+
+  if filereadable('./pgamelua.tags') == 1
+    silent! execute 'python' . (has('python3') ? '3' : '') . ' PGameGenerateTag2CtrlpTag("./pgamelua.tags","./pgamelua.ctrlptags")'
+    call add(s:custom_tag_list,'./pgamelua.ctrlptags')
+  endif
+
+  if len(s:custom_tag_list)>1
+    let g:ctrlp_custom_tag_files=s:custom_tag_list
+    echom "set g:ctrlp_custom_tag_files: ". join(s:custom_tag_list)
+  else
+    echom "not found anny lgame tags file..."
+  endif
+endfu
+
 fu! ctrlp#mycmd#ChangesForOwner()
   let filename=expand('%:p:t')
   if filename != '.myp4.out.googlechanges'

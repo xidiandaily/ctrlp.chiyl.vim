@@ -50,6 +50,11 @@ default_ignoreds=[
         './funcsvr/framework/star_ml.pb.cc'
         ]
 
+default_pgame_ignoreds=[
+        'bin/luascript/tables',
+        'bin/luascript/tables_repo'
+        ]
+
 def GenerateTag2CtrlpTag(filein:str,fileout:str,ignored_prefix_lists=default_ignoreds):
     if os.path.exists(filein) is False:
         sys.exit(0)
@@ -117,6 +122,10 @@ def GenerateTagStat(filein:str,fileout:str):
     with open(fileout,'w',encoding='utf8') as fw:
         for item in filelists_sorted:
             fw.write('{},\t{}\n'.format(item[1],item[0]))
+
+def PGameGenerateTag2CtrlpTag(filein:str,fileout:str):
+    GenerateTag2CtrlpTag(filein,fileout,default_pgame_ignoreds)
+
 
 #GenerateTag2CtrlpTag('G:\\CodeBase.p4\\trunkmain.Server_proj\\lgamesvrc.tags',
 #        'G:\\CodeBase.p4\\trunkmain.Server_proj\\lgamesvrc.ctrltags')
