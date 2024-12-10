@@ -21,10 +21,10 @@
 echom "Loading..."
 
 " Load guard
-"if ( exists('g:loaded_ctrlp_mygit') && g:loaded_ctrlp_mygit )
-"	\ || v:version < 700 || &cp
-"	finish
-"endif
+if ( exists('g:loaded_ctrlp_mygit') && g:loaded_ctrlp_mygit )
+	\ || v:version < 700 || &cp
+	finish
+endif
 let g:loaded_ctrlp_mygit = 1
 let s:plugin_path=escape(expand("<sfile>:p:h"),'\')
 
@@ -74,7 +74,7 @@ function! ctrlp#mygit#fileblame()
     let l:file=expand("%:p")
     let s:out=tinytoolchiyl#base#gettmploopfilename#getname()
     let s:prev_win=win_getid()
-    silent execute ':!git blame '.l:file.' >'.s:out
+    silent execute ':!git blame -w '.l:file.' >'.s:out
     call win_gotoid(s:prev_win)
     call ctrlp#mybase#ctrlp_open_new_win(s:out,1)
 endfunction

@@ -150,7 +150,7 @@ fu! ctrlp#mycmd#PGameCtrlPTag()
   let s:custom_tag_list=[]
   if filereadable('./pgamesvrc.tags') == 1
     silent! execute 'python' . (has('python3') ? '3' : '') . ' PGameGenerateTag2CtrlpTag("./pgamesvrc.tags","./pgamesvrc.ctrlptags")'
-    call add(s:custom_tag_list,'./pgamesvrc.ctrlptags')
+    "call add(s:custom_tag_list,'./pgamesvrc.ctrlptags')
   endif
 
   if filereadable('./pgamexml.tags') == 1

@@ -51,7 +51,6 @@ default_ignoreds=[
         ]
 
 default_pgame_ignoreds=[
-        'bin/luascript/tables',
         'bin/luascript/tables_repo'
         ]
 
