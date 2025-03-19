@@ -171,6 +171,46 @@ fu! ctrlp#mycmd#PGameCtrlPTag()
   endif
 endfu
 
+fu! ctrlp#mycmd#CRGameCtrlPTag()
+  let s:custom_tag_list=[]
+  if filereadable('./crgamesvrc.tags') == 1
+    silent! execute 'python' . (has('python3') ? '3' : '') . ' PGameGenerateTag2CtrlpTag("./crgamesvrc.tags","./crgamesvrc.ctrlptags")'
+    "call add(s:custom_tag_list,'./crgamesvrc.ctrlptags')
+  endif
+
+  if filereadable('./crgamexml.tags') == 1
+    silent! execute 'python' . (has('python3') ? '3' : '') . ' PGameGenerateTag2CtrlpTag("./crgamexml.tags","./crgamexml.ctrlptags")'
+    call add(s:custom_tag_list,'./crgamexml.ctrlptags')
+  endif
+
+  if filereadable('./crgamelua.tags') == 1
+    silent! execute 'python' . (has('python3') ? '3' : '') . ' PGameGenerateTag2CtrlpTag("./crgamelua.tags","./crgamelua.ctrlptags")'
+    call add(s:custom_tag_list,'./crgamelua.ctrlptags')
+  endif
+
+  if len(s:custom_tag_list)>1
+    let g:ctrlp_custom_tag_files=s:custom_tag_list
+    echom "set g:ctrlp_custom_tag_files: ". join(s:custom_tag_list)
+  else
+    echom "not found anny lgame tags file..."
+  endif
+endfu
+
+fu! ctrlp#mycmd#UEProjTag()
+  let s:custom_tag_list=[]
+  if filereadable('./ueprojc.tags') == 1
+    silent! execute 'python' . (has('python3') ? '3' : '') . ' PGameGenerateTag2CtrlpTag("./ueprojc.tags","./ueprojc.ctrlptags")'
+    call add(s:custom_tag_list,'./ueprojc.ctrlptags')
+  endif
+
+  if len(s:custom_tag_list)>1
+    let g:ctrlp_custom_tag_files=s:custom_tag_list
+    echom "set g:ctrlp_custom_tag_files: ". join(s:custom_tag_list)
+  else
+    echom "not found anny lgame tags file..."
+  endif
+endfu
+
 fu! ctrlp#mycmd#ChangesForOwner()
   let filename=expand('%:p:t')
   if filename != '.myp4.out.googlechanges'
